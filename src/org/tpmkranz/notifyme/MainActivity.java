@@ -495,7 +495,7 @@ public class MainActivity extends Activity {
 						}
 					}
 				);
-				new AlertDialog.Builder(this).setView(view).setPositiveButton("Save",
+				new AlertDialog.Builder(this).setView(view).setPositiveButton(R.string.main_menu_popup_save_button,
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
@@ -506,7 +506,7 @@ public class MainActivity extends Activity {
 							prefs.setOrientationFixed(((CheckBox)view.findViewById(R.id.main_menu_popup_orientation_checkbox)).isChecked());
 						}
 					}
-				).setNegativeButton("Cancel", null).show();
+				).setNegativeButton(R.string.main_menu_popup_cancel_button, null).show();
 				return true;
 			case R.id.main_menu_help:
 				new AlertDialog.Builder(this).setMessage(R.string.main_menu_help_message).setTitle(R.string.main_menu_help_title)
