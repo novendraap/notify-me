@@ -291,6 +291,15 @@ public class MainActivity extends Activity {
 						}
 					}
 				);
+				((CheckBox)view.findViewById(R.id.main_menu_popup_orientation_checkbox)).setChecked(prefs.isOrientationFixed());
+				view.findViewById(R.id.main_menu_popup_orientation_caption).setOnClickListener(
+					new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							((CheckBox)view.findViewById(R.id.main_menu_popup_orientation_checkbox)).toggle();
+						}
+					}
+				);
 				((SeekBar)view.findViewById(R.id.main_menu_popup_color_slider_r)).setMax(255);
 				((SeekBar)view.findViewById(R.id.main_menu_popup_color_slider_r)).setOnSeekBarChangeListener(
 					new SeekBar.OnSeekBarChangeListener() {
@@ -494,6 +503,7 @@ public class MainActivity extends Activity {
 							prefs.setInterfaceSlider(((CheckBox)view.findViewById(R.id.main_menu_popup_interface_checkbox)).isChecked());
 							prefs.setSliderBackground(((SeekBar)view.findViewById(R.id.main_menu_popup_color_slider_r)).getProgress(), ((SeekBar)view.findViewById(R.id.main_menu_popup_color_slider_g)).getProgress(), ((SeekBar)view.findViewById(R.id.main_menu_popup_color_slider_b)).getProgress());
 							prefs.setScreenTimeout(( ((EditText)view.findViewById(R.id.main_menu_popup_timeout_editor)).getText().toString().equals("") ? 0L : Long.parseLong(((EditText)view.findViewById(R.id.main_menu_popup_timeout_editor)).getText().toString())*1000L ));
+							prefs.setOrientationFixed(((CheckBox)view.findViewById(R.id.main_menu_popup_orientation_checkbox)).isChecked());
 						}
 					}
 				).setNegativeButton("Cancel", null).show();

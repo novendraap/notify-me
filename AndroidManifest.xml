@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.tpmkranz.notifyme"
-    android:versionCode="8"
-    android:versionName="1.7" >
+    android:versionCode="9"
+    android:versionName="1.8" >
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -71,7 +71,7 @@
         <activity
             android:name="org.tpmkranz.notifyme.NotificationActivity"
             android:excludeFromRecents="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:noHistory="true"
             android:theme="@style/TransparentWP" >
         </activity>

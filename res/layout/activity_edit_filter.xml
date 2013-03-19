@@ -233,12 +233,49 @@
             android:text="@string/editor_lightup_description" />
         </LinearLayout>
     </RelativeLayout>
+        
+    <RelativeLayout 
+        android:id="@+id/editor_duringcall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editor_lightup"
+        android:layout_marginTop="6dp">
+        
+        <CheckBox 
+            android:id="@+id/editor_duringcall_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="checkTheDuringCallBox"/>
+
+        <LinearLayout 
+            android:id="@+id/editor_duringcall_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="checkTheDuringCallBox"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/editor_duringcall_checkbox"
+            android:addStatesFromChildren="true"
+            android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/editor_duringcall_title"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/editor_duringcall_description" />
+        </LinearLayout>
+    </RelativeLayout>
     
     <RelativeLayout
         android:id="@+id/editor_keywords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editor_lightup"
+        android:layout_below="@id/editor_duringcall"
         android:layout_marginTop="6dp" >
 
         <CheckBox
@@ -270,12 +307,58 @@
             android:text="@string/editor_keywords_description" />
         </LinearLayout>
     </RelativeLayout>
-
+    
+    <RelativeLayout
+        android:id="@+id/editor_keywords_blacklist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editor_keywords" >
+        <RadioButton 
+            android:id="@+id/editor_keywords_blacklist_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="checkTheBlacklistRadiobutton"/>
+        <TextView
+            android:id="@+id/editor_keywords_blacklist_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/editor_keywords_blacklist"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/editor_keywords_blacklist_radio"
+            android:clickable="true"
+            android:onClick="checkTheBlacklistRadiobutton" />
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/editor_keywords_whitelist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editor_keywords_blacklist" >
+        <RadioButton 
+            android:id="@+id/editor_keywords_whitelist_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="checkTheWhitelistRadiobutton"/>
+        <TextView
+            android:id="@+id/editor_keywords_whitelist_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/editor_keywords_whitelist"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/editor_keywords_whitelist_radio"
+            android:clickable="true"
+            android:onClick="checkTheWhitelistRadiobutton" />
+    </RelativeLayout>
+    
     <EditText
         android:id="@+id/editor_keywords_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editor_keywords"
+        android:layout_below="@id/editor_keywords_whitelist"
         android:focusable="false" />
 
 </RelativeLayout>

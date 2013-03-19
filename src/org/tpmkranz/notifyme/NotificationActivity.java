@@ -25,6 +25,7 @@ import android.app.KeyguardManager;
 import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -57,14 +58,15 @@ public class NotificationActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		screenWasOff = !((PowerManager)getSystemService(POWER_SERVICE)).isScreenOn();
+		screenWasOff = !((PowerManager)getSystemService(POWER_SERVICE)).isScreenOn() || ((KeyguardManager)getSystemService(KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode();
 		if( !((KeyguardManager)getSystemService(KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode() )
 			setTheme(R.style.Transparent);
 		getWindow().setFlags(LayoutParams.FLAG_TURN_SCREEN_ON, LayoutParams.FLAG_TURN_SCREEN_ON);
 		getWindow().setFlags(LayoutParams.FLAG_SHOW_WHEN_LOCKED, LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		prefs = new Prefs(this);
+		if( prefs.isOrientationFixed() )
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 		filter = ((TemporaryStorage)getApplicationContext()).getFilter();
-		dTask = new DrawTask();
 		super.onCreate(savedInstanceState);
 	}
 
@@ -72,6 +74,7 @@ public class NotificationActivity extends Activity {
 	@Override
 	protected void onResume(){
 		super.onResume();
+		dTask = new DrawTask();
 		notif = (Notification) ((TemporaryStorage)getApplicationContext()).getParcelable();
 		if( !prefs.isPopupAllowed(filter) ){
 			new WaitForLightTask().execute();
@@ -95,10 +98,14 @@ public class NotificationActivity extends Activity {
 		}
 		if( !preparePopup() )
 			return;
-		if( prefs.isInterfaceSlider() )
-			showPopupSlider();
-		else
-			showPopupButton();
+		try{
+			if( prefs.isInterfaceSlider() )
+				showPopupSlider();
+			else
+				showPopupButton();
+		}catch(Exception e){
+			finish();
+		}
 	}
 	
 	@SuppressLint("NewApi")
@@ -109,6 +116,7 @@ public class NotificationActivity extends Activity {
 			else
 				remViews = notif.contentView;
 		}catch(Exception e){
+			finish();
 			return false;
 		}
 		dialog = new AlertDialog.Builder(this).setView(pView).setInverseBackgroundForced(prefs.isBackgroundColorInverted()).create();
@@ -182,7 +190,11 @@ public class NotificationActivity extends Activity {
 							dialog.dismiss();
 							big = !big;
 							if( preparePopup() )
-								showPopupButton();
+								try{
+									showPopupButton();
+								}catch(Exception e){
+									finish();
+								}
 						}
 					}
 				);
@@ -201,8 +213,10 @@ public class NotificationActivity extends Activity {
 		if( prefs.getScreenTimeout() != 0L && screenWasOff )
 			Settings.System.putLong(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, ((TemporaryStorage)getApplicationContext()).getTimeout());
 		((TemporaryStorage)getApplicationContext()).storeStuff(0L);
-		dialog.dismiss();
-		dTask.cancel(true);
+		if( dialog != null )
+			dialog.dismiss();
+		if( dTask != null )
+			dTask.cancel(true);
 	}
 	
 	@Override
@@ -309,7 +323,11 @@ public class NotificationActivity extends Activity {
 						dialog.dismiss();
 						big = !big;
 						if( preparePopup() )
-							showPopupSlider();
+							try{
+								showPopupSlider();
+							}catch(Exception e){
+								finish();
+							}
 						else
 							finish();
 					}catch(Exception e){

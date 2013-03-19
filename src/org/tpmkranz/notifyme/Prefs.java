@@ -60,6 +60,15 @@ public class Prefs {
 		edit.commit();
 	}
 	
+	protected boolean isOrientationFixed(){
+		return prefs.getBoolean("OrientationFixed", true);
+	}
+	
+	protected void setOrientationFixed(boolean orientationFixed){
+		edit.putBoolean("OrientationFixed", orientationFixed);
+		edit.commit();
+	}
+	
 	protected boolean isInterfaceSlider(){
 		return prefs.getBoolean("InterfaceSlider", true);
 	}
@@ -98,12 +107,20 @@ public class Prefs {
 		return ( prefs.getInt("filter"+String.valueOf(filter)+"numberOfKeywords", 0) > 0 );
 	}
 	
+	protected boolean isFilterWhitelist(int filter){
+		return prefs.getBoolean("filter"+String.valueOf(filter)+"Whitelist", true);
+	}
+	
 	protected boolean isPopupAllowed(int filter){
 		return prefs.getBoolean("filter"+String.valueOf(filter)+"Popup", true);
 	}
 	
 	protected boolean isAggressive(int filter){
 		return prefs.getBoolean("filter"+String.valueOf(filter)+"Aggressive", false);
+	}
+	
+	protected boolean isDuringCallAllowed(int filter){
+		return prefs.getBoolean("filter"+String.valueOf(filter)+"Call", false);
 	}
 	
 	protected boolean isExpansionAllowed(int filter){
@@ -127,7 +144,7 @@ public class Prefs {
 		return keywords;
 	}
 	
-	protected void addFilter(String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed){
+	protected void addFilter(String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed, boolean duringCall){
 		int filter = getNumberOfFilters();
 		edit.putString("filter"+String.valueOf(filter)+"App", app);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Popup", popupAllowed);
@@ -135,11 +152,12 @@ public class Prefs {
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expansion", expansionAllowed);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expanded", expanded);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Light", lightUpAllowed);
+		edit.putBoolean("filter"+String.valueOf(filter)+"Call", duringCall);
 		edit.putInt( "numberOfFilters", filter + 1 );
 		edit.commit();
 	}
 
-	protected void addFilter(String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed, String[] keywords){
+	protected void addFilter(String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed, boolean duringCall, String[] keywords, boolean filterWhitelist){
 		int filter = getNumberOfFilters();
 		edit.putString("filter"+String.valueOf(filter)+"App", app);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Popup", popupAllowed);
@@ -147,6 +165,7 @@ public class Prefs {
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expansion", expansionAllowed);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expanded", expanded);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Light", lightUpAllowed);
+		edit.putBoolean("filter"+String.valueOf(filter)+"Call", duringCall);
 		int pos = 0;
 		for( int i = 0 ; i < keywords.length ; i++ ){
 			if( !isUseless(keywords, i) ){
@@ -154,11 +173,12 @@ public class Prefs {
 			}
 		}
 		edit.putInt("filter"+String.valueOf(filter)+"numberOfKeywords", pos);
+		edit.putBoolean("filter"+String.valueOf(filter)+"Whitelist", filterWhitelist);
 		edit.putInt( "numberOfFilters", filter + 1 );
 		edit.commit();
 	}
 	
-	protected void editFilter(int filter, String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed){
+	protected void editFilter(int filter, String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed, boolean duringCall){
 		for( int i = 0 ; i < prefs.getInt("filter"+String.valueOf(filter)+"numberOfKeywords", 0) ; i++ ){
 			edit.remove("filter"+String.valueOf(filter)+"Keyword"+String.valueOf(i));
 		}
@@ -169,10 +189,11 @@ public class Prefs {
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expansion", expansionAllowed);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expanded", expanded);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Light", lightUpAllowed);
+		edit.putBoolean("filter"+String.valueOf(filter)+"Call", duringCall);
 		edit.commit();
 	}
 	
-	protected void editFilter(int filter, String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed, String[] keywords){
+	protected void editFilter(int filter, String app, boolean popupAllowed, boolean aggressive, boolean expansionAllowed, boolean expanded, boolean lightUpAllowed, boolean duringCall, String[] keywords, boolean filterWhitelist){
 		for( int i = 0 ; i < prefs.getInt("filter"+String.valueOf(filter)+"numberOfKeywords", 0) ; i++ ){
 			edit.remove("filter"+String.valueOf(filter)+"Keyword"+String.valueOf(i));
 		}
@@ -183,6 +204,7 @@ public class Prefs {
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expansion", expansionAllowed);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Expanded", expanded);
 		edit.putBoolean("filter"+String.valueOf(filter)+"Light", lightUpAllowed);
+		edit.putBoolean("filter"+String.valueOf(filter)+"Call", duringCall);
 		int pos = 0;
 		for( int i = 0 ; i < keywords.length ; i++ ){
 			if( !isUseless(keywords, i) ){
@@ -190,6 +212,7 @@ public class Prefs {
 			}
 		}
 		edit.putInt("filter"+String.valueOf(filter)+"numberOfKeywords", pos);
+		edit.putBoolean("filter"+String.valueOf(filter)+"Whitelist", filterWhitelist);
 		edit.commit();
 	}
 	
@@ -231,10 +254,12 @@ public class Prefs {
 		edit.remove("filter"+String.valueOf(filter)+"Expansion");
 		edit.remove("filter"+String.valueOf(filter)+"Expanded");
 		edit.remove("filter"+String.valueOf(filter)+"Light");
+		edit.remove("filter"+String.valueOf(filter)+"Call");
 		for( int i = 0 ; i < prefs.getInt("filter"+String.valueOf(filter)+"numberOfKeywords", 0) ; i++ ){
 			edit.remove("filter"+String.valueOf(filter)+"Keyword"+String.valueOf(i));
 		}
 		edit.remove("filter"+String.valueOf(filter)+"numberOfKeywords");
+		edit.remove("filter"+String.valueOf(filter)+"Whitelist");
 		for( int i = filter + 1 ; i < getNumberOfFilters() ; i++ ){
 			edit.putString("filter"+String.valueOf(i-1)+"App", getFilterApp(i));
 			edit.remove("filter"+String.valueOf(i)+"App");
@@ -248,12 +273,16 @@ public class Prefs {
 			edit.remove("filter"+String.valueOf(i)+"Expanded");
 			edit.putBoolean("filter"+String.valueOf(i-1)+"Light", isLightUpAllowed(i));
 			edit.remove("filter"+String.valueOf(i)+"Light");
+			edit.putBoolean("filter"+String.valueOf(i-1)+"Call", isDuringCallAllowed(i));
+			edit.remove("filter"+String.valueOf(i)+"Call");
 			for( int j = 0 ; j < prefs.getInt("filter"+String.valueOf(i)+"numberOfKeywords", 0) ; j++ ){
 				edit.putString("filter"+String.valueOf(i-1)+"Keyword"+String.valueOf(j), prefs.getString("filter"+String.valueOf(i)+"Keyword"+String.valueOf(j), ""));
 				edit.remove("filter"+String.valueOf(i)+"Keyword"+String.valueOf(j));
 			}
 			edit.putInt("filter"+String.valueOf(i-1)+"numberOfKeywords", prefs.getInt("filter"+String.valueOf(i)+"numberOfKeywords", 0));
 			edit.remove("filter"+String.valueOf(i)+"numberOfKeywords");
+			edit.putBoolean("filter"+String.valueOf(i-1)+"Whitelist", isFilterWhitelist(i));
+			edit.remove("filter"+String.valueOf(i)+"Whitelist");
 		}
 		edit.putInt( "numberOfFilters", getNumberOfFilters() - 1 );
 		edit.commit();

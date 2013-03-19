@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.RemoteViews;
@@ -45,7 +44,7 @@ public class NotificationService extends AccessibilityService {
 				arg0.unregisterReceiver(this);
 				return;
 			}
-			startActivity(new Intent(arg0, NotificationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP) );
+			startActivity(new Intent(arg0, NotificationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) );
 			arg0.unregisterReceiver(this);
 		}
 	};
@@ -61,7 +60,7 @@ public class NotificationService extends AccessibilityService {
 				return;
 		}else
 			return;
-		if( filterMatch(event, false) && ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getCallState() == 0 ) triggerNotification(event);
+		if( filterMatch(event, false) && ( prefs.isDuringCallAllowed(filter) || ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE)).getCallState() == 0 ) ) triggerNotification(event);
 	}
 
 	@SuppressLint("NewApi")
@@ -72,18 +71,17 @@ public class NotificationService extends AccessibilityService {
 			if( event.getPackageName().equals(prefs.getFilterApp(i)) ){
 				filter = i;
 				if( prefs.hasFilterKeywords(i) && !nameOnly ){
+					filterMatch = !prefs.isFilterWhitelist(filter);
 					String notificationContents = ( event.getText().size() == 0 ? "" : event.getText().get(0).toString() );
 					try{
 						Notification notification = (Notification) event.getParcelableData();
 						RemoteViews remoteViews = notification.contentView;
-						LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-						ViewGroup localViews = (ViewGroup) inflater.inflate(remoteViews.getLayoutId(), null);
-						remoteViews.reapply(this, localViews);
+						ViewGroup localViews = (ViewGroup) remoteViews.apply(this, null);
 						String piece = "";
-						for( int j = 16900000 ; j < 17000000 ; j++ ){
+						for( int j = 16905000 ; j < 16910000 ; j++ ){
 							try{
 								piece = "\n"+( (TextView) localViews.findViewById(j) ).getText();
-								notificationContents.concat(piece);
+								notificationContents = notificationContents.concat(piece);
 							}catch(Exception e){
 								
 							}
@@ -91,13 +89,12 @@ public class NotificationService extends AccessibilityService {
 						if(android.os.Build.VERSION.SDK_INT >= 16){
 							try{
 								remoteViews = notification.bigContentView;
-								localViews = (ViewGroup) inflater.inflate(remoteViews.getLayoutId(), null);
-								remoteViews.reapply(this, localViews);
+								localViews = (ViewGroup) remoteViews.apply(this, null);
 								piece = "";
-								for( int j = 16900000 ; j < 17000000 ; j++ ){
+								for( int j = 16905000 ; j < 16910000 ; j++ ){
 									try{
 										piece = "\n"+( (TextView) localViews.findViewById(j) ).getText();
-										notificationContents.concat(piece);
+										notificationContents = notificationContents.concat(piece);
 									}catch(Exception e){
 										
 									}
@@ -110,9 +107,9 @@ public class NotificationService extends AccessibilityService {
 						
 					}
 					String[] keywords = prefs.getFilterKeywords(i);
-					for( int j = 0 ; j < keywords.length && !filterMatch ; j++ ){
-						if( notificationContents.contains(keywords[j]) && !keywords.equals("") ){
-							filterMatch = true;
+					for( int j = 0 ; j < keywords.length ; j++ ){
+						if( notificationContents.contains(keywords[j]) && !keywords[j].equals("") ){
+							filterMatch = prefs.isFilterWhitelist(filter);
 						}
 					}
 				}else{
@@ -132,7 +129,7 @@ public class NotificationService extends AccessibilityService {
 		((TemporaryStorage)getApplicationContext()).storeStuff(event.getParcelableData());
 		((TemporaryStorage)getApplicationContext()).storeStuff(filter);
 		if( ( prefs.isLightUpAllowed(filter) || ((PowerManager)getSystemService(POWER_SERVICE)).isScreenOn() ) )
-			startActivity(new Intent(this, NotificationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP) );
+			startActivity(new Intent(this, NotificationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) );
 		else{
 			IntentFilter filter = new IntentFilter();
 			filter.addAction(Intent.ACTION_SCREEN_ON);
