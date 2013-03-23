@@ -44,7 +44,7 @@ public class NotificationService extends AccessibilityService {
 				arg0.unregisterReceiver(this);
 				return;
 			}
-			startActivity(new Intent(arg0, NotificationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) );
+			startActivity(new Intent(arg0, ( ((KeyguardManager)getSystemService(KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode() ? NotificationActivity.class : NotificationActivityTransparent.class ) ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("screenWasOff", ((TemporaryStorage)getApplicationContext()).wasScreenOff() || ((KeyguardManager)getSystemService(KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode()) );
 			arg0.unregisterReceiver(this);
 		}
 	};
@@ -128,12 +128,19 @@ public class NotificationService extends AccessibilityService {
 		}
 		((TemporaryStorage)getApplicationContext()).storeStuff(event.getParcelableData());
 		((TemporaryStorage)getApplicationContext()).storeStuff(filter);
-		if( ( prefs.isLightUpAllowed(filter) || ((PowerManager)getSystemService(POWER_SERVICE)).isScreenOn() ) )
-			startActivity(new Intent(this, NotificationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) );
+		if( ((PowerManager)getSystemService(POWER_SERVICE)).isScreenOn() ){
+			if( prefs.isPopupAllowed(filter) ){
+				startActivity(new Intent(this, ( ((KeyguardManager)getSystemService(KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode() ? NotificationActivity.class : NotificationActivityTransparent.class ) ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("screenWasOff", ((TemporaryStorage)getApplicationContext()).wasScreenOff() || ((KeyguardManager)getSystemService(KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode()) );
+			}
+		}
 		else{
-			IntentFilter filter = new IntentFilter();
-			filter.addAction(Intent.ACTION_SCREEN_ON);
-			registerReceiver(receiver, filter);
+			if( !prefs.isLightUpAllowed(filter) ){
+				IntentFilter iFilter = new IntentFilter();
+				iFilter.addAction(Intent.ACTION_SCREEN_ON);
+				registerReceiver(receiver, iFilter);
+			}else{
+				startActivity(new Intent(this, LightUp.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) );
+			}
 		}
 	}
 

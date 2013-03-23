@@ -42,7 +42,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.RemoteViews;
 
-public class NotificationActivity extends Activity {
+public class NotificationActivityTransparent extends Activity {
 
 	Prefs prefs;
 	int filter;

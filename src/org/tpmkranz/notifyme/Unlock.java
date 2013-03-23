@@ -28,14 +28,17 @@ import android.view.WindowManager.LayoutParams;
 public class Unlock extends Activity {
 
 	Notification notif;
+	WaitForUnlock wFU;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(LayoutParams.FLAG_DISMISS_KEYGUARD);
 		notif = ((Notification) ((TemporaryStorage)getApplicationContext()).getParcelable());
-		new WaitForUnlock().execute();
+		wFU = new WaitForUnlock();
+		wFU.execute();
 	}
-
+		
 	private class WaitForUnlock extends AsyncTask<Void,Void,Boolean>{
 		@Override
 		protected Boolean doInBackground(Void... params) {

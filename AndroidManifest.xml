@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.tpmkranz.notifyme"
-    android:versionCode="9"
-    android:versionName="1.8" >
+    android:versionCode="10"
+    android:versionName="1.9" >
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -76,9 +76,23 @@
             android:theme="@style/TransparentWP" >
         </activity>
         <activity
+            android:name="org.tpmkranz.notifyme.NotificationActivityTransparent"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:theme="@style/Transparent" >
+        </activity>
+        <activity
             android:name="org.tpmkranz.notifyme.Unlock"
             android:excludeFromRecents="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:theme="@style/TransparentWP" >
+        </activity>
+        <activity
+            android:name="org.tpmkranz.notifyme.LightUp"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
             android:noHistory="true"
             android:theme="@style/TransparentWP" >
         </activity>

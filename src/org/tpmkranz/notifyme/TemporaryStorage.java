@@ -25,10 +25,13 @@ public class TemporaryStorage extends Application {
 	private static int filter;
 	private static long timeout;
 	private static boolean access;
+	private static boolean screenWasOff;
+	
 	@Override
 	public void onCreate(){
 		super.onCreate();
 		access = false;
+		screenWasOff = true;
 	}
 	
 	public void storeStuff(Parcelable parc){
@@ -41,6 +44,10 @@ public class TemporaryStorage extends Application {
 	
 	public void storeStuff(long time){
 		timeout = time;
+	}
+	
+	public void storeStuff(boolean screenOff){
+		screenWasOff = screenOff;
 	}
 	
 	public Parcelable getParcelable(){
@@ -61,5 +68,9 @@ public class TemporaryStorage extends Application {
 	
 	public boolean hasAccess(){
 		return access;
+	}
+	
+	public boolean wasScreenOff(){
+		return screenWasOff;
 	}
 }
