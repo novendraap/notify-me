@@ -256,7 +256,7 @@ public class NotificationActivity extends Activity {
 	private class DrawTask extends AsyncTask<Void, Void, Void>{
 		@Override
 		protected Void doInBackground(Void... params) {
-			while( sView.getWidth() == 0 ){
+			while( sView.getWidth() == 0 && !this.isCancelled() ){
 				
 			}
 			sView.setDimensions((float) sView.getWidth(),(float) sView.getHeight());
@@ -270,7 +270,7 @@ public class NotificationActivity extends Activity {
 			X = sView.centerX;
 			lastX = X / 2;
 			while( !this.isCancelled() ){
-				while( sView.onDisplay ){
+				while( sView.onDisplay && !this.isCancelled() ){
 					if( lastX != X ){
 						sView.doDraw(X, touchValid);
 						if( !touchValid ){
